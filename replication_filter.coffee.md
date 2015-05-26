@@ -58,10 +58,10 @@ If a `sip_domain_name` was provided in the query and the document contains a `si
 The filter is a JavaScript closure.
 
       """
-        function () {
+        (function () {
           var replicate_types = #{JSON.stringify replicate_types};
           #{p_fun main_code}
-        }();
+        })();
 
       """
 
