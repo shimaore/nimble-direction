@@ -110,7 +110,7 @@ Cleanup replication state, otherwise CouchDB won't let us update.
 
 Finally, update the document.
 
-          debug "Updating '#{id}'."
+          debug "Updating '#{id}'.", doc
           replicator.put doc
 
         .catch (error) ->
