@@ -1,0 +1,25 @@
+{
+  "name": "nimble-direction",
+  "version": "1.0.0",
+  "description": "CCNQ4 base configuration tool",
+  "main": "index.js",
+  "scripts": {
+    "prepublish": "coffee -m -c *.coffee.md",
+    "pretest": "npm install",
+    "test": "mocha",
+    "clean": "rm -rf *.js *.js.map npm-debug.log"
+  },
+  "author": "Stéphane Alnet <stephane@shimaore.net> (http://stephane.shimaore.net/)",
+  "license": "Unlicense",
+  "devDependencies": {
+    "coffee-script": "^1.9.2",
+    "memdown": "^1.0.0",
+    "mocha": "^2.2.5"
+  },
+  "dependencies": {
+    "bluebird": "^2.9.26",
+    "coffeescript-helpers": "^2.0.0",
+    "debug": "^2.2.0",
+    "pouchdb": "^3.5.0"
+  }
+}
