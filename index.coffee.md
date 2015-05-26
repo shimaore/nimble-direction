@@ -70,7 +70,7 @@ Create the target database if it doesn't already exist.
 Retrieve the previous revision of the replication document.
 
         .then ->
-          cfg.replicator.get id
+          replicator.get id
         .catch (error) ->
           debug error
           debug '(ignored)'
@@ -110,7 +110,7 @@ Cleanup replication state, otherwise CouchDB won't let us update.
 Finally, update the document.
 
           debug "Updating '#{id}'."
-          cfg.replicator.put doc
+          replicator.put doc
 
         .catch (error) ->
           debug error
