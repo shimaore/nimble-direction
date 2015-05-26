@@ -104,6 +104,7 @@ Let the callback add any field they'd like.
 Cleanup replication state, otherwise CouchDB won't let us update.
 
           delete doc._replication_state
+          delete doc._replication_state_reason
           delete doc._replication_state_time
           delete doc._replication_id
 
