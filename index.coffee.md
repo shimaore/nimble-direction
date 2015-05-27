@@ -179,7 +179,6 @@ Toolbox
 
     PouchDB = require 'pouchdb'
     Promise = require 'bluebird'
-    Request = require 'superagent'
     crypto = require 'crypto'
     assert = require 'assert'
     url = require 'url'
