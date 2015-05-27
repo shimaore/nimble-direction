@@ -47,14 +47,69 @@ Typically used to push a design document so that we can query.
 `replicate`
 -----------
 
-`replicate(name,extensions_cb)` stores a replication document for the database `name` from `prefix_source` to `prefix_admin`.
+`replicate(name,extensions_cb)` replicate database `name` from `prefix_source` to `prefix_admin`.
 Before submission, the replication document is passed to the (optional) `extensions_cb` callback.
 TODO: allow Array for prefix_source so that we can replicate from a multi-master database.
 
       replicator = new PouchDB "#{cfg.prefix_admin}/_replicator"
+
+Here we have multiple solutions, so I'll test them:
+- either delete any existing document with the same name (this should cancel the replication, based on the CouchDB docs), and recreate a new one;
+
+      use_delete = true
+
+- or use a different ID for documents that describes different replications.
+
+      # use_delete = false
+
+The one thing we know doesn't work is using the same document ID for documents that describe different replications (e.g. with different filters: experience shows the replicator doesn't notice and keep using the old filter).
+
       cfg.replicate = (name,extensions) ->
-        id = "Replicate #{name} from master"
-        debug "Going to start replication of #{name}."
+
+        source = url.parse cfg.prefix_source
+        comment = "replication of #{name} from #{source.host}"
+        debug "Going to start #{comment}."
+
+I'm creating a `model` document.. just in case I'd have to revert to manually pushing to `/_replicate` because the replicator is too broken. :)
+
+        model =
+          comment: comment
+          continuous: true
+          target: name
+
+Remove authorization from the source, because...
+
+          source:
+            url: url.format
+              protocol: source.protocol
+              host: source.host
+              pathname: name
+
+even with CouchDB 1.6.1 we still have the issue with CouchDB not properly managing authorization headers when a username and password are provided in the original URI that contains "special" characters (like `@` or space). So let's handle it ourselves.
+
+        if source.auth?
+          auth = (new Buffer source.auth).toString 'base64'
+          model.source.headers =
+            Authorization: "Basic #{auth}"
+
+Let the callback add any field they'd like.
+
+        extensions? model
+
+Create a (somewhat) unique ID for the document.
+
+        sum = crypto.createHash 'sha256'
+        sum.update JSON.stringify model
+        id = sum.digest 'hex'
+        model.comment_id = id
+
+When deleting, we can use the `comment` value since it doesn't have to be unique even if we change the record.
+When creating documents with different IDs, well, use the computed ID.
+
+        model._id = if use_delete then comment else id
+
+Let's get started.
+
         Promise.resolve()
 
 Create the target database if it doesn't already exist.
@@ -63,62 +118,44 @@ Create the target database if it doesn't already exist.
           target = new PouchDB "#{cfg.prefix_admin}/#{name}"
           target.info()
         .catch (error) ->
-          debug error
-          debug "Unable to create (target) local #{name} database"
+          debug "info #{name}: #{error}"
           throw error
 
-Retrieve the previous revision of the replication document.
+When using the deletion method, first delete the existing replication document.
 
         .then ->
-          replicator.get id
+          if use_delete
+            replicator.get model._id
+            .catch (error) -> {}
+            .then ({_rev}) ->
+              replicator.remove model._id, _rev if _rev?
         .catch (error) ->
-          debug error
-          debug '(ignored)'
-          {}
+          debug "remove #{model._id}: #{error}"
+          throw error
+
+Give CouchDB some time to breath.
+
+        .delay 2000
 
 Update the replication document.
 
-        .then (doc) ->
-          source = url.parse cfg.prefix_source
-          doc._id ?= id
-          doc.source =
-            url: url.format
-              protocol: source.protocol
-              host: source.host
-              pathname: name
+        .then ->
+          replicator.get model._id
+        .catch (error) -> {}
+        .then ({_rev}) ->
+          doc = {}
+          doc._rev = _rev if _rev?
+          for own k,v of model
+            doc[k] = v
 
-Even with CouchDB 1.6.1 we still have the issue with CouchDB not properly managing authorization headers when a username and password are provided in the original URI. So let's handle it ourselves.
-
-          if source.auth?
-            auth = (new Buffer source.auth).toString 'base64'
-            doc.source.headers =
-              Authorization: "Basic #{auth}"
-
-          doc.target = name
-          doc.continuous = true
-
-Let the callback add any field they'd like.
-
-          extensions? doc
-
-Cleanup replication state, otherwise CouchDB won't let us update.
-
-          delete doc._replication_state
-          delete doc._replication_state_reason
-          delete doc._replication_state_time
-          delete doc._replication_id
-
-Finally, update the document.
-
-          debug "Updating '#{id}'.", doc
           replicator.put doc
 
         .catch (error) ->
-          debug error
+          debug "put #{model._id}: #{error}"
           if error.status? and error.status is 403
             debug "Replication already started"
             return
-          debug "Replication from #{cfg.prefix_source}/#{name} failed."
+          debug "Replication from #{model.source} failed."
           throw error
 
 `users`
@@ -142,6 +179,8 @@ Toolbox
 
     PouchDB = require 'pouchdb'
     Promise = require 'bluebird'
+    Request = require 'superagent'
+    crypto = require 'crypto'
     assert = require 'assert'
     url = require 'url'
     pkg = require './package.json'
