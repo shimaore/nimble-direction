@@ -3,23 +3,45 @@ nimble-direction
 
 This module extends the `cfg` object with CCNQ4-related tools.
 
+Usage
+-----
+
+```coffeescript
+Nimble = require 'nimble-direction'
+
+cfg = require 'config.json'
+Nimble cfg
+.then ->
+  run cfg
+```
+
     module.exports = (cfg) ->
       debug "Configuring #{pkg.name} version #{pkg.version}.", cfg
 
-`prefix_admin` is a CouchDB prefix (a base URI with no database name in the path) with admin access to the local CouchDB instance.
+`.prefix_admin` is a CouchDB prefix (a base URI with no database name in the path) with admin access to the _local_ CouchDB instance.
+If it is not present in the configuration, the value of the `NIMBLE_PREFIX_ADMIN` environment variable is used.
+
+      cfg.prefix_admin ?= process.env.NIMBLE_PREFIX_ADMIN
+
+One of the environment variable or the `.prefix_admin` configuration item is required.
 
       assert cfg.prefix_admin?, 'Missing prefix_admin'
 
-`prefix_source` is a CouchDB prefix (a base URI with no database name in the path) for the central database (so that we can start replications from it).
+`.prefix_source` is a CouchDB prefix (a base URI with no database name in the path) for the _central_ (master) database (so that we can start replications from it).
+If it is not present in the configuration, the value of the `NIMBLE_PREFIX_SOURCE` environment variable is used.
+
+      cfg.prefix_source ?= process.env.NIMBLE_PREFIX_SOURCE
+
+One of the environment variable or the `.prefix_source` configuration item is required.
 
       assert cfg.prefix_source?, 'Missing prefix_source'
 
-The optional `prov_master_admin` (string or array) are URIs to the master provisioning database(s) with admin access.
+The optional `.prov_master_admin` (string or array) are URIs to the master provisioning database(s) with admin access.
 
 `master_push`
 ---------------
 
-Push a document on the master provisioning database.
+`master_push(doc)`: push a document on the master provisioning database.
 Typically used to push a design document so that we can filter for replication.
 
       prov_masters = []
@@ -47,11 +69,11 @@ Typically used to push a design document so that we can query.
 `replicate`
 -----------
 
-`replicate(name,extensions_cb)` replicate database `name` from `prefix_source` to `prefix_admin`.
+`replicate(name,extensions_cb)`: replicate database `name` from `prefix_source` to `prefix_admin`.
 Before submission, the replication document is passed to the (optional) `extensions_cb` callback.
 TODO: allow Array for prefix_source so that we can replicate from a multi-master database.
 
-      replicator = new PouchDB "#{cfg.prefix_admin}/_replicator"
+      replicator = new PouchDB cfg.replicator ? "#{cfg.prefix_admin}/_replicator"
 
 Here we have multiple solutions, so I'll test them:
 - either delete any existing document with the same name (this should cancel the replication, based on the CouchDB docs), and recreate a new one;
@@ -163,16 +185,18 @@ Update the replication document.
 
 A PouchDB instance to the local users database. (We keep the original name.)
 
-      cfg.users = new PouchDB "#{cfg.prefix_admin}/_users"
+      cfg.users ?= process.env.NIMBLE_USERS
+      cfg.users = new PouchDB cfg.users ? "#{cfg.prefix_admin}/_users"
 
 `prov`
 ------
 
 A PouchDB instance to the local provisioning database.
 
-      cfg.prov = new PouchDB "#{cfg.prefix_admin}/provisioning"
+      cfg.provisioning ?= process.env.NIMBLE_PROVISIONING
+      cfg.prov = new PouchDB cfg.provisioning ? "#{cfg.prefix_admin}/provisioning"
 
-      Promise.resolve true
+      Promise.resolve cfg
 
 Toolbox
 =======
