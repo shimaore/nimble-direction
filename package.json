@@ -17,7 +17,7 @@
     "mocha": "^2.2.5"
   },
   "dependencies": {
-    "bluebird": "^2.9.27",
+    "bluebird": "^2.9.30",
     "coffeescript-helpers": "^2.1.0",
     "debug": "^2.2.0",
     "pouchdb": "^3.6.0"
