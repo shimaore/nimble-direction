@@ -111,6 +111,7 @@ even with CouchDB 1.6.1 we still have the issue with CouchDB not properly managi
 
         if source.auth?
           auth = (new Buffer source.auth).toString 'base64'
+          debug "Encoded `#{source.auth}` as `#{auth}`."
           model.source.headers =
             Authorization: "Basic #{auth}"
 
