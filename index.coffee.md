@@ -16,9 +16,15 @@ Nimble cfg
 ```
 
     module.exports = (cfg) ->
+
+Configuration variables
+-----------------------
+
       debug "Configuring #{pkg.name} version #{pkg.version}.", cfg
 
-`.prefix_admin` is a CouchDB prefix (a base URI with no database name in the path) with admin access to the _local_ CouchDB instance.
+### `prefix_admin` / `NIMBLE_PREFIX_ADMIN`  (required)
+
+`.prefix_admin` (string) is a CouchDB prefix (a base URI with no database name in the path) with admin access to the _local_ CouchDB instance.
 If it is not present in the configuration, the value of the `NIMBLE_PREFIX_ADMIN` environment variable is used.
 
       cfg.prefix_admin ?= process.env.NIMBLE_PREFIX_ADMIN
@@ -27,17 +33,23 @@ One of the environment variable or the `.prefix_admin` configuration item is req
 
       assert cfg.prefix_admin?, 'Missing prefix_admin'
 
-`.prefix_source` is a CouchDB prefix (a base URI with no database name in the path) for the _central_ (master) database (so that we can start replications from it).
+### `prefix_source` / `NIMBLE_PREFIX_SOURCE`  (optional)
+
+`.prefix_source` (string) is a CouchDB prefix (a base URI with no database name in the path) for the _central_ (master) database (so that we can start replications from it).
 If it is not present in the configuration, the value of the `NIMBLE_PREFIX_SOURCE` environment variable is used.
 
       cfg.prefix_source ?= process.env.NIMBLE_PREFIX_SOURCE
 
-One of the environment variable or the `.prefix_source` configuration item is required.
+If neither is present, replication will not work.
+
+### `prov_master_admin` / `NIMBLE_PROV_MASTER_ADMIN`  (optional)
+
+`.prov_master_admin` (string or array) are URIs to the master provisioning database(s) with admin access.
+If it is not present in the configuration, the value of the `NIMBLE_PROV_MASTER_ADMIN` environment variable is used.
 
       cfg.prov_master_admin ?= process.env.NIMBLE_PROV_MASTER_ADMIN
-      assert cfg.prefix_source?, 'Missing prefix_source'
 
-The optional `.prov_master_admin` (string or array) are URIs to the master provisioning database(s) with admin access.
+If neither is present, the `master_push` function will not work.
 
 `master_push`
 ---------------
@@ -88,6 +100,9 @@ Here we have multiple solutions, so I'll test them:
 The one thing we know doesn't work is using the same document ID for documents that describe different replications (e.g. with different filters: experience shows the replicator doesn't notice and keep using the old filter).
 
       cfg.replicate = (name,extensions) ->
+        unless cfg.prefix_source?
+          debug "Warning: `replicate` called in standalone NIMBLE_MODE (ignored)"
+          return
 
         source = url.parse cfg.prefix_source
         comment = "replication of #{name} from #{source.host}"
