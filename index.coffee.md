@@ -34,6 +34,7 @@ If it is not present in the configuration, the value of the `NIMBLE_PREFIX_SOURC
 
 One of the environment variable or the `.prefix_source` configuration item is required.
 
+      cfg.prov_master_admin ?= process.env.NIMBLE_PROV_MASTER_ADMIN
       assert cfg.prefix_source?, 'Missing prefix_source'
 
 The optional `.prov_master_admin` (string or array) are URIs to the master provisioning database(s) with admin access.
