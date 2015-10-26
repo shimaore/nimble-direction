@@ -1,6 +1,6 @@
 {
   "name": "nimble-direction",
-  "version": "2.2.1",
+  "version": "3.0.0",
   "description": "CCNQ4 base configuration tool",
   "main": "index.js",
   "scripts": {
