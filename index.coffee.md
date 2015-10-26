@@ -211,7 +211,8 @@ A PouchDB instance to the local users database. (We keep the original name.)
 A PouchDB instance to the local provisioning database.
 
       cfg.provisioning ?= process.env.NIMBLE_PROVISIONING
-      cfg.prov = new PouchDB cfg.provisioning ? "#{cfg.prefix_admin}/provisioning"
+      cfg.provisioning ?= "#{cfg.prefix_admin}/provisioning"
+      cfg.prov = new PouchDB cfg.provisioning
 
       Promise.resolve cfg
 
