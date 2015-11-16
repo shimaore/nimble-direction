@@ -77,6 +77,7 @@ Push a document on the local provisioning database.
 Typically used to push a design document so that we can query.
 
       cfg.push = (doc) ->
+        debug "Pushing #{doc._id}"
         update cfg.prov, doc
 
 `replicate`
