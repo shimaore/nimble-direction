@@ -20,6 +20,9 @@
       it 'should provide `master_push`', ->
         assert 'function' is typeof cfg.master_push
 
+      it 'should be idempotent', ->
+        nimble cfg
+
 TODO: actually test anything
 
     assert = require 'assert'
