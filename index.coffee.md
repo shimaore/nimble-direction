@@ -207,10 +207,8 @@ A PouchDB instance to the local users database.
 
       cfg.users ?= process.env.NIMBLE_USERS
       cfg.users ?= "#{cfg.prefix_admin}/_users"
-      unless cfg.users instanceof PouchDB
-        assert typeof cfg.users is 'string', "cfg.users should be a string but it is #{typeof cfg.users} #{cfg.users}"
+      if typeof cfg.users is 'string'
         cfg.users = new PouchDB cfg.users
-        assert cfg.users instanceof PouchDB, 'cfg.users is not a PouchDB'
 
 `prov`
 ------
@@ -219,8 +217,7 @@ A PouchDB instance to the local provisioning database.
 
       cfg.provisioning ?= process.env.NIMBLE_PROVISIONING
       cfg.provisioning ?= "#{cfg.prefix_admin}/provisioning"
-      unless cfg.prov instanceof PouchDB
-        cfg.prov = new PouchDB cfg.provisioning
+      cfg.prov ?= new PouchDB cfg.provisioning
 
       Promise.resolve cfg
 
