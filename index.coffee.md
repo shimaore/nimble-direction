@@ -87,7 +87,9 @@ Typically used to push a design document so that we can query.
 Before submission, the replication document is passed to the (optional) `extensions_cb` callback.
 TODO: allow Array for prefix_source so that we can replicate from a multi-master database.
 
-      replicator = new PouchDB cfg.replicator ? "#{cfg.prefix_admin}/_replicator"
+      cfg.replicator ?= process.env.NIMBLE_REPLICATOR
+      cfg.replicator ?= "#{cfg.prefix_admin}/_replicator"
+      replicator = new PouchDB cfg.replicator
 
 Here we have multiple solutions, so I'll test them:
 - either delete any existing document with the same name (this should cancel the replication, based on the CouchDB docs), and recreate a new one;
@@ -201,10 +203,12 @@ Update the replication document.
 `users`
 -------
 
-A PouchDB instance to the local users database. (We keep the original name.)
+A PouchDB instance to the local users database.
 
       cfg.users ?= process.env.NIMBLE_USERS
-      cfg.users = new PouchDB cfg.users ? "#{cfg.prefix_admin}/_users"
+      cfg.users ?= "#{cfg.prefix_admin}/_users"
+      unless cfg.users instanceof PouchDB
+        cfg.users = new PouchDB cfg.users
 
 `prov`
 ------
@@ -213,7 +217,8 @@ A PouchDB instance to the local provisioning database.
 
       cfg.provisioning ?= process.env.NIMBLE_PROVISIONING
       cfg.provisioning ?= "#{cfg.prefix_admin}/provisioning"
-      cfg.prov = new PouchDB cfg.provisioning
+      unless cfg.prov instanceof PouchDB
+        cfg.prov = new PouchDB cfg.provisioning
 
       Promise.resolve cfg
 
