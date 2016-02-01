@@ -63,7 +63,7 @@ Typically used to push a design document so that we can filter for replication.
         if typeof masters is 'string'
           masters = [masters]
         prov_masters = masters.map (name) ->
-          new PouchDB name
+          new PouchDB name, skip_setup: true
 
       cfg.master_push = (doc) ->
         debug "Updating master design document #{doc._id}"
@@ -89,7 +89,7 @@ TODO: allow Array for prefix_source so that we can replicate from a multi-master
 
       cfg.replicator ?= process.env.NIMBLE_REPLICATOR
       cfg.replicator ?= "#{cfg.prefix_admin}/_replicator"
-      replicator = new PouchDB cfg.replicator
+      replicator = new PouchDB cfg.replicator, skip_setup: true
 
 Here we have multiple solutions, so I'll test them:
 - either delete any existing document with the same name (this should cancel the replication, based on the CouchDB docs), and recreate a new one;
@@ -157,7 +157,7 @@ Let's get started.
 Create the target database if it doesn't already exist.
 
         .then ->
-          target = new PouchDB "#{cfg.prefix_admin}/#{name}"
+          target = new PouchDB "#{cfg.prefix_admin}/#{name}", skip_setup: false
           target.info()
         .catch (error) ->
           debug "info #{name}: #{error}"
@@ -208,7 +208,7 @@ A PouchDB instance to the local users database.
       cfg.users ?= process.env.NIMBLE_USERS
       cfg.users ?= "#{cfg.prefix_admin}/_users"
       if typeof cfg.users is 'string'
-        cfg.users = new PouchDB cfg.users
+        cfg.users = new PouchDB cfg.users, skip_setup: true
 
 `prov`
 ------
@@ -217,14 +217,18 @@ A PouchDB instance to the local provisioning database.
 
       cfg.provisioning ?= process.env.NIMBLE_PROVISIONING
       cfg.provisioning ?= "#{cfg.prefix_admin}/provisioning"
-      cfg.prov ?= new PouchDB cfg.provisioning
+      cfg.prov ?= new PouchDB cfg.provisioning, skip_setup: true
 
       Promise.resolve cfg
 
 Toolbox
 =======
 
-    PouchDB = require 'pouchdb'
+    PouchDB = (require 'pouchdb').defaults
+      ajax:
+        forever: true
+        timeout: 10000
+
     Promise = require 'bluebird'
     crypto = require 'crypto'
     assert = require 'assert'
