@@ -227,7 +227,7 @@ Toolbox
     PouchDB = (require 'pouchdb').defaults
       ajax:
         forever: true
-        timeout: 10000
+        timeout: 20*1000
 
     Promise = require 'bluebird'
     crypto = require 'crypto'
