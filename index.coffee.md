@@ -161,7 +161,7 @@ Create the target database if it doesn't already exist.
           target.info()
         .catch (error) ->
           debug "info #{name}: #{error}"
-          throw error
+          Promise.reject error
 
 When using the deletion method, first delete the existing replication document.
 
@@ -173,7 +173,7 @@ When using the deletion method, first delete the existing replication document.
               replicator.remove model._id, _rev if _rev?
         .catch (error) ->
           debug "remove #{model._id}: #{error}"
-          throw error
+          Promise.reject error
 
 Give CouchDB some time to breath.
 
@@ -198,7 +198,7 @@ Update the replication document.
             debug "Replication already started"
             return
           debug "Replication from #{model.source} failed."
-          throw error
+          Promise.reject error
 
 `users`
 -------
