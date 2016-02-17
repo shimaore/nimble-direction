@@ -160,7 +160,7 @@ Create the target database if it doesn't already exist.
           target = new PouchDB "#{cfg.prefix_admin}/#{name}", skip_setup: false
           target.info()
         .catch (error) ->
-          debug "info #{name}: #{error}"
+          debug "info #{name}: #{error.stack ? error}"
           Promise.reject error
 
 When using the deletion method, first delete the existing replication document.
@@ -172,7 +172,7 @@ When using the deletion method, first delete the existing replication document.
             .then ({_rev}) ->
               replicator.remove model._id, _rev if _rev?
         .catch (error) ->
-          debug "remove #{model._id}: #{error}"
+          debug "remove #{model._id}: #{error.stack ? error}"
           Promise.reject error
 
 Give CouchDB some time to breath.
@@ -193,7 +193,7 @@ Update the replication document.
           replicator.put doc
 
         .catch (error) ->
-          debug "put #{model._id}: #{error}"
+          debug "put #{model._id}: #{error.stack ? error}"
           if error.status? and error.status is 403
             debug "Replication already started"
             return
