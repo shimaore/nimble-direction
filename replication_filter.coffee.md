@@ -8,7 +8,6 @@ The default (if no list of record types is provided) is to replicate all the kno
     default_replicate_types = [
       'carrier'
       'config'
-      'destination'
       'domain'
       'emergency'
       'endpoint'
@@ -17,6 +16,7 @@ The default (if no list of record types is provided) is to replicate all the kno
       'list'
       'location'
       'number'
+      'number_domain'
       'ruleset'
     ]
 
