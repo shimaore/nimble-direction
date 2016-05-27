@@ -148,7 +148,7 @@ Create a (somewhat) unique ID for the document.
 When deleting, we can use the `comment` value since it doesn't have to be unique even if we change the record.
 When creating documents with different IDs, well, use the computed ID.
 
-        model._id = if use_delete then comment else id
+        model._id = if use_delete then doc.comment else id
 
 Let's get started.
 
