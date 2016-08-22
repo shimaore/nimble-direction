@@ -13,13 +13,13 @@
   "license": "Unlicense",
   "devDependencies": {
     "coffee-script": "^1.10.0",
-    "memdown": "^1.1.2",
-    "mocha": "^2.4.5"
+    "memdown": "^1.2.0",
+    "mocha": "^3.0.2"
   },
   "dependencies": {
-    "bluebird": "^3.3.4",
+    "bluebird": "^3.4.1",
     "coffeescript-helpers": "^2.2.0",
     "debug": "^2.2.0",
-    "pouchdb": "^5.3.0"
+    "pouchdb": "^5.4.5"
   }
 }
