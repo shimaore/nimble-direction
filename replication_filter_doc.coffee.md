@@ -21,4 +21,3 @@ Toolbox
 
     module.exports = replication_filter_doc
     replication_filter = require './replication_filter'
-
