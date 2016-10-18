@@ -88,19 +88,6 @@ Typically used to push a design document so that we can query.
 Before submission, the replication document is passed to the (optional) `extensions_cb` callback.
 TODO: allow Array for prefix_source so that we can replicate from a multi-master database.
 
-      cfg.replicator ?= process.env.NIMBLE_REPLICATOR
-      cfg.replicator ?= "#{cfg.prefix_admin}/_replicator"
-      replicator = new PouchDB cfg.replicator, skip_setup: true
-
-Here we have multiple solutions, so I'll test them:
-- either delete any existing document with the same name (this should cancel the replication, based on the CouchDB docs), and recreate a new one;
-
-      use_delete = true
-
-- or use a different ID for documents that describes different replications.
-
-      # use_delete = false
-
 The one thing we know doesn't work is using the same document ID for documents that describe different replications (e.g. with different filters: experience shows the replicator doesn't notice and keep using the old filter).
 
       cfg.replicate = seem (name,extensions) ->
@@ -109,7 +96,7 @@ The one thing we know doesn't work is using the same document ID for documents t
           return
 
         try
-          yield Replicator cfg.prefix_source, cfg.replicator, name, extensions
+          yield Replicator cfg.prefix_source, cfg.prefix_admin, name, extensions
 
         catch error
           debug "replicator #{name}: #{error.stack ? error}"
