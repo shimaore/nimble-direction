@@ -19,4 +19,3 @@ Overwrite a document in a PouchDB database.
     module.exports = update
     pkg = require './package.json'
     debug = (require 'debug') "#{pkg.name}:update"
-    Promise = require 'bluebird'

@@ -12,16 +12,15 @@
   "author": "Stéphane Alnet <stephane@shimaore.net> (http://stephane.shimaore.net/)",
   "license": "Unlicense",
   "devDependencies": {
-    "coffee-script": "^1.10.0",
-    "memdown": "^1.2.0",
-    "mocha": "^3.0.2"
+    "coffee-script": "^1.11.1",
+    "memdown": "^1.2.2",
+    "mocha": "^3.1.2"
   },
   "dependencies": {
-    "bluebird": "^3.4.1",
     "coffeescript-helpers": "^2.2.0",
     "debug": "^2.2.0",
     "frantic-team": "^1.0.4",
-    "pouchdb": "^5.4.5"
+    "pouchdb": "^6.0.7",
     "seem": "^2.0.0"
   }
 }
