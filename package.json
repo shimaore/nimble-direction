@@ -20,6 +20,8 @@
     "bluebird": "^3.4.1",
     "coffeescript-helpers": "^2.2.0",
     "debug": "^2.2.0",
+    "frantic-team": "^1.0.4",
     "pouchdb": "^5.4.5"
+    "seem": "^2.0.0"
   }
 }

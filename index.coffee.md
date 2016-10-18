@@ -15,6 +15,7 @@ Nimble cfg
   run cfg
 ```
 
+    seem = require 'seem'
     module.exports = (cfg) ->
 
 Configuration variables
@@ -102,103 +103,16 @@ Here we have multiple solutions, so I'll test them:
 
 The one thing we know doesn't work is using the same document ID for documents that describe different replications (e.g. with different filters: experience shows the replicator doesn't notice and keep using the old filter).
 
-      cfg.replicate = (name,extensions) ->
+      cfg.replicate = seem (name,extensions) ->
         unless cfg.prefix_source?
           debug "Warning: `replicate` called in standalone NIMBLE_MODE (ignored)"
           return
 
-        source = url.parse cfg.prefix_source
-        comment = "replication of #{name} from #{source.host}"
-        debug "Going to start #{comment}."
+        try
+          Replicator cfg.prefix_source, cfg.replicator, name, extensions
 
-I'm creating a `model` document.. just in case I'd have to revert to manually pushing to `/_replicate` because the replicator is too broken. :)
-
-        model =
-          comment: comment
-          continuous: true
-          target: name
-
-Remove authorization from the source, because...
-
-          source:
-            url: url.format
-              protocol: source.protocol
-              host: source.host
-              pathname: name
-
-even with CouchDB 1.6.1 we still have the issue with CouchDB not properly managing authorization headers when a username and password are provided in the original URI that contains "special" characters (like `@` or space). So let's handle it ourselves.
-
-        if source.auth?
-          auth = (new Buffer source.auth).toString 'base64'
-          debug "Encoded `#{source.auth}` of `#{cfg.prefix_source}` as `#{auth}`."
-          model.source.headers =
-            Authorization: "Basic #{auth}"
-
-Let the callback add any field they'd like.
-
-        extensions? model
-
-Create a (somewhat) unique ID for the document.
-
-        sum = crypto.createHash 'sha256'
-        sum.update JSON.stringify model
-        id = sum.digest 'hex'
-        model.comment_id = id
-
-When deleting, we can use the `comment` value since it doesn't have to be unique even if we change the record.
-When creating documents with different IDs, well, use the computed ID.
-
-        model._id = if use_delete then model.comment else id
-
-Let's get started.
-
-        Promise.resolve()
-
-Create the target database if it doesn't already exist.
-
-        .then ->
-          target = new PouchDB "#{cfg.prefix_admin}/#{name}", skip_setup: false
-          target.info()
-        .catch (error) ->
-          debug "info #{name}: #{error.stack ? error}"
-          Promise.reject error
-
-When using the deletion method, first delete the existing replication document.
-
-        .then ->
-          if use_delete
-            replicator.get model._id
-            .catch (error) -> {}
-            .then ({_rev}) ->
-              replicator.remove model._id, _rev if _rev?
-        .catch (error) ->
-          debug "remove #{model._id}: #{error.stack ? error}"
-          Promise.reject error
-
-Give CouchDB some time to breath.
-
-        .delay 2000
-
-Update the replication document.
-
-        .then ->
-          replicator.get model._id
-        .catch (error) -> {}
-        .then ({_rev}) ->
-          doc = {}
-          doc._rev = _rev if _rev?
-          for own k,v of model
-            doc[k] = v
-
-          replicator.put doc
-
-        .catch (error) ->
-          debug "put #{model._id}: #{error.stack ? error}"
-          if error.status? and error.status is 403
-            debug "Replication already started"
-            return
-          debug "Replication from #{model.source} failed."
-          Promise.reject error
+        catch error
+          debug "replicator #{name}: #{error.stack ? error}"
 
 `users`
 -------
@@ -229,7 +143,7 @@ Toolbox
         forever: true
         timeout: 20*1000
 
-    Promise = require 'bluebird'
+    Replicator = require 'frantic-team'
     crypto = require 'crypto'
     assert = require 'assert'
     url = require 'url'
