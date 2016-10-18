@@ -109,7 +109,7 @@ The one thing we know doesn't work is using the same document ID for documents t
           return
 
         try
-          Replicator cfg.prefix_source, cfg.replicator, name, extensions
+          yield Replicator cfg.prefix_source, cfg.replicator, name, extensions
 
         catch error
           debug "replicator #{name}: #{error.stack ? error}"
