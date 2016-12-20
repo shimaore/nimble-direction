@@ -88,7 +88,7 @@ Typically used to push a design document so that we can query.
 Before submission, the replication document is passed to the (optional) `extensions_cb` callback.
 TODO: allow Array for prefix_source so that we can replicate from a multi-master database.
 
-The one thing we know doesn't work is using the same document ID for documents that describe different replications (e.g. with different filters: experience shows the replicator doesn't notice and keep using the old filter).
+The one thing we know doesn't work is using the same document ID for documents that describe different replications (e.g. with different filters: experience shows the replicator doesn't notice and keeps using the old filter).
 
       cfg.replicate = seem (name,extensions) ->
         unless cfg.prefix_source?
