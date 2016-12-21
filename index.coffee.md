@@ -118,7 +118,7 @@ A PouchDB instance to the local provisioning database.
 
       cfg.provisioning ?= process.env.NIMBLE_PROVISIONING
       cfg.provisioning ?= "#{cfg.prefix_admin}/provisioning"
-      cfg.prov ?= new PouchDB cfg.provisioning, skip_setup: true
+      cfg.prov ?= new PouchDB cfg.provisioning
 
       cfg.reject_tombstones = seem (db) ->
         _id = '_design/reject_tombstones'
