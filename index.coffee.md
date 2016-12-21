@@ -128,7 +128,7 @@ A PouchDB instance to the local provisioning database.
         doc.validate_doc_update = '''
           function(newDoc, oldDoc) {
             if(oldDoc) { return; }
-            if(newDoc[“_deleted”]) { throw({forbidden : “Deleted document rejected”}); }
+            if(newDoc._deleted) { throw({forbidden : 'Deleted document rejected'}); }
           }
         '''
         yield db.put doc
