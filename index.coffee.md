@@ -121,16 +121,12 @@ A PouchDB instance to the local provisioning database.
       cfg.prov ?= new PouchDB cfg.provisioning
 
       cfg.reject_tombstones = seem (db) ->
-        _id = '_design/reject_tombstones'
+        {_id} = reject_tombstones
         doc = yield db
           .get _id
           .catch -> {_id}
-        doc.validate_doc_update = '''
-          function(newDoc, oldDoc) {
-            if(oldDoc) { return; }
-            if(newDoc._deleted) { throw({forbidden : 'Deleted document rejected'}); }
-          }
-        '''
+        for own k,v of reject_tombstones
+          doc[k] = v
         yield db.put doc
 
       Promise.resolve cfg
@@ -142,6 +138,8 @@ Toolbox
       ajax:
         forever: true
         timeout: 20*1000
+
+    reject_tombstones = require 'reject-tombstones'
 
     Replicator = require 'frantic-team'
     crypto = require 'crypto'
