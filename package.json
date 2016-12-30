@@ -4,7 +4,7 @@
   "description": "CCNQ4 base configuration tool",
   "main": "index.js",
   "scripts": {
-    "prepublish": "coffee -m -c *.coffee.md",
+    "prepublish": "coffee -M -c *.coffee.md",
     "pretest": "npm install",
     "test": "mocha",
     "clean": "rm -rf *.js *.js.map npm-debug.log"
