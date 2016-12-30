@@ -12,15 +12,15 @@
   "author": "Stéphane Alnet <stephane@shimaore.net> (http://stephane.shimaore.net/)",
   "license": "Unlicense",
   "devDependencies": {
-    "coffee-script": "^1.11.1",
-    "memdown": "^1.2.2",
-    "mocha": "^3.1.2"
+    "coffee-script": "^1.12.2",
+    "memdown": "^1.2.4",
+    "mocha": "^3.2.0"
   },
   "dependencies": {
     "coffeescript-helpers": "^2.2.0",
-    "debug": "^2.2.0",
-    "frantic-team": "^1.0.5",
-    "pouchdb": "^6.0.7",
+    "debug": "^2.6.0",
+    "frantic-team": "^1.1.0",
+    "pouchdb": "^6.1.0",
     "reject-tombstones": "^1.0.0",
     "seem": "^2.0.0"
   }
