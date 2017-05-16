@@ -21,7 +21,7 @@ Nimble cfg
 Configuration variables
 -----------------------
 
-      debug "Configuring #{pkg.name} version #{pkg.version}.", cfg
+      debug "Configuring #{pkg.name} version #{pkg.version}."
 
 ### `prefix_admin` / `NIMBLE_PREFIX_ADMIN`  (required)
 
@@ -146,5 +146,5 @@ Toolbox
     assert = require 'assert'
     url = require 'url'
     pkg = require './package.json'
-    debug = (require 'debug') "#{pkg.name}:config"
+    debug = (require 'tangible') "#{pkg.name}:config"
     update = require './update'
