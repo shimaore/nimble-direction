@@ -13,7 +13,7 @@ Overwrite a document in a PouchDB database.
         doc._rev = _rev if _rev?
         db.put doc
       .catch (error) ->
-        debug "#{doc._id}: #{error.stack() ? JSON.stringify error}"
+        debug "#{doc._id}: #{error.stack ? JSON.stringify error}"
         Promise.reject new Error "update on #{doc._id} failed"
 
     module.exports = update
