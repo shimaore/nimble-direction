@@ -21,6 +21,7 @@
     "frantic-team": "^1.2.0",
     "pouchdb-adapter-http": "^6.3.4",
     "pouchdb-core": "^6.3.4",
+    "pouchdb-mapreduce": "^6.3.4",
     "reject-tombstones": "^1.0.0",
     "seem": "^2.0.0",
     "tangible": "^1.7.0"
