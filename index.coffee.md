@@ -134,10 +134,12 @@ A PouchDB instance to the local provisioning database.
 Toolbox
 =======
 
-    PouchDB = (require 'pouchdb').defaults
-      ajax:
-        forever: true
-        timeout: 20*1000
+    PouchDB = require 'pouchdb-core'
+      .plugin require 'pouchdb-adapter-http'
+      .defaults
+        ajax:
+          forever: true
+          timeout: 20*1000
 
     reject_tombstones = require 'reject-tombstones'
 

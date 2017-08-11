@@ -1,10 +1,10 @@
-    PouchDB = require 'pouchdb'
-    memdown = require 'memdown'
+    PouchDB = require 'pouchdb-core'
+      .plugin require 'pouchdb-adapter-memory'
     assert = require 'assert'
 
     describe 'update', ->
       update = require '../update'
-      db = new PouchDB 'test', db: memdown
+      db = new PouchDB 'test', adapter: 'memory'
 
       before ->
         db.put
