@@ -16,6 +16,8 @@ Nimble cfg
 ```
 
     seem = require 'seem'
+    sleep = (timeout) -> new Promise (resolve) -> setTimeout resolve, timeout
+
     module.exports = (cfg) ->
 
 Configuration variables
@@ -90,16 +92,24 @@ TODO: allow Array for prefix_source so that we can replicate from a multi-master
 
 The one thing we know doesn't work is using the same document ID for documents that describe different replications (e.g. with different filters: experience shows the replicator doesn't notice and keeps using the old filter).
 
-      cfg.replicate = seem (name,extensions) ->
+      cfg.replicate = replicate = seem (name,extensions,again = 2) ->
         unless cfg.prefix_source?
           debug "Warning: `replicate` called in standalone NIMBLE_MODE (ignored)"
           return
 
         try
           yield Replicator cfg.prefix_source, cfg.prefix_admin, name, extensions
+          return
 
         catch error
           debug "replicator #{name}: #{error.stack ? error}"
+
+          if again > 0
+            yield sleep 503+251*Math.random()
+            yield replicate name, extensions, again-1
+          else
+            debug "replicator #{name}: Too many errors, giving up."
+          return
 
 `users`
 -------
