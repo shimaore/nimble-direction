@@ -144,9 +144,7 @@ A PouchDB instance to the local provisioning database.
 Toolbox
 =======
 
-    PouchDB = require 'pouchdb-core'
-      .plugin require 'pouchdb-adapter-http'
-      .plugin require 'pouchdb-mapreduce'
+    PouchDB = require 'ccnq4-pouchdb'
       .defaults
         ajax:
           forever: true

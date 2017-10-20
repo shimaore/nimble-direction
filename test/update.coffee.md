@@ -1,4 +1,4 @@
-    PouchDB = require 'pouchdb-core'
+    PouchDB = require 'ccnq4-pouchdb'
       .plugin require 'pouchdb-adapter-memory'
     assert = require 'assert'
 
