@@ -92,7 +92,7 @@ TODO: allow Array for prefix_source so that we can replicate from a multi-master
 
 The one thing we know doesn't work is using the same document ID for documents that describe different replications (e.g. with different filters: experience shows the replicator doesn't notice and keeps using the old filter).
 
-      cfg.replicate = replicate = seem (name,extensions,again = 2) ->
+      cfg.replicate = replicate = seem (name,extensions,again = 2, delay = 503) ->
         unless cfg.prefix_source?
           debug "Warning: `replicate` called in standalone NIMBLE_MODE (ignored)"
           return
@@ -105,8 +105,8 @@ The one thing we know doesn't work is using the same document ID for documents t
           debug "replicator #{name}: #{error.stack ? error}"
 
           if again > 0
-            yield sleep 503+251*Math.random()
-            yield replicate name, extensions, again-1
+            yield sleep delay+delay*0.5*Math.random()
+            yield replicate name, extensions, again-1, delay*1.5646
           else
             debug "replicator #{name}: Too many errors, giving up."
           return
