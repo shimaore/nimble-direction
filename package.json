@@ -4,7 +4,7 @@
   "description": "CCNQ4 base configuration tool",
   "main": "index.js",
   "scripts": {
-    "prepublish": "coffee -M -c *.coffee.md",
+    "prepublishOnly": "npm install --only=dev && rm package-lock.json && coffee -c *.coffee.md",
     "pretest": "npm install",
     "test": "mocha",
     "clean": "rm -rf *.js *.js.map npm-debug.log"
