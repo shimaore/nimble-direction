@@ -130,14 +130,18 @@ A PouchDB instance to the local provisioning database.
       cfg.provisioning ?= "#{cfg.prefix_admin}/provisioning"
       cfg.prov ?= new PouchDB cfg.provisioning
 
-      cfg.reject_tombstones = seem (db) ->
-        {_id} = reject_tombstones
-        doc = yield db
+      inject = (source) -> (db) ->
+        {_id} = source
+        doc = await db
           .get _id
           .catch -> {_id}
-        for own k,v of reject_tombstones
+        for own k,v of source
           doc[k] = v
-        yield db.put doc
+        await db.put doc
+        return
+
+      cfg.reject_tombstones = inject reject_tombstones
+      cfg.reject_types = inject reject_types
 
       Promise.resolve cfg
 
@@ -151,6 +155,7 @@ Toolbox
           timeout: 20*1000
 
     reject_tombstones = require 'reject-tombstones'
+    reject_types = require './reject-types'
 
     Replicator = require 'frantic-team'
     crypto = require 'crypto'

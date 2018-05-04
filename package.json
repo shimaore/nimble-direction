@@ -4,24 +4,23 @@
   "description": "CCNQ4 base configuration tool",
   "main": "index.js",
   "scripts": {
-    "prepublishOnly": "npm install --only=dev && rm package-lock.json && coffee -c *.coffee.md",
-    "pretest": "npm install",
+    "build": "npm install --only=dev && rm package-lock.json && coffee -c *.coffee.md",
+    "prepublishOnly": "npm run build",
+    "pretest": "npm run build && coffee -c test/*.coffee.md",
     "test": "mocha",
-    "clean": "rm -rf *.js *.js.map npm-debug.log"
+    "clean": "rm -rf *.js *.js.map test/*.js npm-debug.log"
   },
   "author": "Stéphane Alnet <stephane@shimaore.net> (http://stephane.shimaore.net/)",
   "license": "Unlicense",
   "devDependencies": {
-    "coffee-script": "^1.12.7",
-    "mocha": "^4.0.1",
-    "pouchdb-adapter-memory": "^6.4.1"
+    "coffeescript": "^2.3.0",
+    "mocha": "^5.1.1",
+    "pouchdb-adapter-memory": "^6.4.3"
   },
   "dependencies": {
-    "coffeescript-helpers": "^2.2.0",
     "frantic-team": "^1.3.0",
     "ccnq4-pouchdb": "^1.0.0",
     "reject-tombstones": "^1.0.0",
-    "seem": "^2.0.0",
-    "tangible": "^1.9.0"
+    "tangible": "^2.0.0"
   }
 }
