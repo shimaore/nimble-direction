@@ -99,7 +99,7 @@ The one thing we know doesn't work is using the same document ID for documents t
 
         try
           yield Replicator cfg.prefix_source, cfg.prefix_admin, name, extensions
-          return
+          return true
 
         catch error
           debug "replicator #{name}: #{error.stack ? error}"
@@ -109,7 +109,7 @@ The one thing we know doesn't work is using the same document ID for documents t
             yield replicate name, extensions, again-1, delay*1.5646
           else
             debug "replicator #{name}: Too many errors, giving up."
-          return
+            return false
 
 `users`
 -------
