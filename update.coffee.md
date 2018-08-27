@@ -3,6 +3,8 @@
 
 Overwrite a document in a PouchDB database.
 
+Note that `marked-summer/update-version` might be a better option.
+
     update = (db,doc) ->
       debug "Update #{doc._id}"
       db.get doc._id
