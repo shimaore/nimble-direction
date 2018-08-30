@@ -9,7 +9,7 @@ Note that `marked-summer/update-version` might be a better option.
       debug "Update #{doc._id}"
       db.get doc._id
       .catch (error) ->
-        debug "#{doc._id}: #{error} (ignored)"
+        debug "#{doc._id}: #{error.stack ? JSON.stringify error} (ignored)"
         {}
       .then ({_rev}) ->
         doc._rev = _rev if _rev?

@@ -101,7 +101,7 @@ The one thing we know doesn't work is using the same document ID for documents t
           return true
 
         catch error
-          debug "replicator #{name}: #{error.stack ? error}"
+          debug "replicator #{name}: #{error.stack ? JSON.stringify error}"
 
           if again > 0
             await sleep delay+delay*0.5*Math.random()
