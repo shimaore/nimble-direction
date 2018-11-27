@@ -1,15 +1,18 @@
-    PouchDB = require 'ccnq4-pouchdb'
-      .plugin require 'pouchdb-adapter-memory'
+    CouchDB = require 'most-couchdb'
     assert = require 'assert'
 
     describe 'update', ->
       update = require '../update'
-      db = new PouchDB 'test', adapter: 'memory'
+      db = new CouchDB 'http://admin:password@couchdb:5984/test-update'
 
       before ->
-        db.put
+        try await db.create()
+        await db.put
           _id:'foo'
           data: 3
+
+      after ->
+        try await db.destroy()
 
       it 'should overwrite the document once', ->
         update db, _id:'foo', data:4

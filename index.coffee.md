@@ -65,7 +65,7 @@ Typically used to push a design document so that we can filter for replication.
         if typeof masters is 'string'
           masters = [masters]
         prov_masters = masters.map (name) ->
-          new PouchDB name, skip_setup: true
+          new CouchDB name
 
       cfg.master_push = (doc) ->
         debug "Updating master design document #{doc._id}"
@@ -80,7 +80,7 @@ Typically used to push a design document so that we can query.
 
       cfg.push = (doc) ->
         debug "Pushing #{doc._id}"
-        update cfg.prov, doc
+        update (new CouchDB cfg.provisioning), doc
 
 `replicate`
 -----------
@@ -110,16 +110,6 @@ The one thing we know doesn't work is using the same document ID for documents t
             debug "replicator #{name}: Too many errors, giving up."
             return false
 
-`users`
--------
-
-A PouchDB instance to the local users database.
-
-      cfg.users ?= process.env.NIMBLE_USERS
-      cfg.users ?= "#{cfg.prefix_admin}/_users"
-      if typeof cfg.users is 'string'
-        cfg.users = new PouchDB cfg.users, skip_setup: true
-
 `prov`
 ------
 
@@ -127,7 +117,6 @@ A PouchDB instance to the local provisioning database.
 
       cfg.provisioning ?= process.env.NIMBLE_PROVISIONING
       cfg.provisioning ?= "#{cfg.prefix_admin}/provisioning"
-      cfg.prov ?= new PouchDB cfg.provisioning
 
       inject = (source) -> (db) ->
         {_id} = source
@@ -147,11 +136,7 @@ A PouchDB instance to the local provisioning database.
 Toolbox
 =======
 
-    PouchDB = require 'ccnq4-pouchdb'
-      .defaults
-        ajax:
-          forever: true
-          timeout: 20*1000
+    CouchDB = require 'most-couchdb'
 
     reject_tombstones = require 'reject-tombstones'
     reject_types = require './reject-types'
