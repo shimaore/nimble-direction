@@ -18,9 +18,9 @@
     "pouchdb-adapter-memory": "^7.0.0"
   },
   "dependencies": {
-    "frantic-team": "^1.4.1",
+    "frantic-team": "^1.4.2",
     "ccnq4-pouchdb": "^1.1.2",
     "reject-tombstones": "^1.0.0",
-    "tangible": "^2.0.0"
+    "tangible": "^3.0.0"
   }
 }
