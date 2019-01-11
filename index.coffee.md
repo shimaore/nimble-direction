@@ -91,6 +91,8 @@ TODO: allow Array for prefix_source so that we can replicate from a multi-master
 
 The one thing we know doesn't work is using the same document ID for documents that describe different replications (e.g. with different filters: experience shows the replicator doesn't notice and keeps using the old filter).
 
+cfg.prefix_source (string, URI) — prefix used to build URI of source CouchDB databases when replicating downstream (e.g. from a master provisioning server)
+
       cfg.replicate = replicate = (name,extensions,again = 2, delay = 503) ->
         unless cfg.prefix_source?
           debug "Warning: `replicate` called in standalone NIMBLE_MODE (ignored)"
@@ -101,14 +103,29 @@ The one thing we know doesn't work is using the same document ID for documents t
           return true
 
         catch error
-          debug "replicator #{name}: #{error.stack ? JSON.stringify error}"
+          debug "replicate #{name}: #{error.stack ? JSON.stringify error}"
 
           if again > 0
             await sleep delay+delay*0.5*Math.random()
             await replicate name, extensions, again-1, delay*1.5646
           else
-            debug "replicator #{name}: Too many errors, giving up."
+            debug "replicate #{name}: Too many errors, giving up."
             return false
+
+cfg.prefix_upload (string, URI) — prefix used to build URI of target CouchDB databases when replicating upstream (e.g. towards a CDR aggregation server)
+
+      cfg.replicate_up = replicate_up = (name,group_name) ->
+        unless cfg.prefix_upload?
+          debug "Warning: `replicate_up` is missing `cfg.prefix_upload` (ignored)"
+          return
+
+        try
+          await Replicator cfg.prefix_admin, cfg.prefix_upload, name, null, group_name
+          return true
+
+        catch error
+          debug "replicate_up #{name}: #{error.stack ? JSON.stringify error}"
+          return false
 
 `prov`
 ------

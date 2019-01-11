@@ -11,6 +11,8 @@
 
       it 'should provide `replicate`', ->
         assert 'function' is typeof cfg.replicate
+      it 'should provide `replicate_up`', ->
+        assert 'function' is typeof cfg.replicate_up
       it 'should provide `push`', ->
         assert 'function' is typeof cfg.push
       it 'should provide `master_push`', ->
