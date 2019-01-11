@@ -6,21 +6,15 @@
 
       cfg = {prefix_admin,prefix_source}
 
-      before ->
-        nimble cfg
+      N = nimble cfg
 
       it 'should provide `replicate`', ->
-        assert 'function' is typeof cfg.replicate
+        assert 'function' is typeof N.replicate
       it 'should provide `replicate_up`', ->
-        assert 'function' is typeof cfg.replicate_up
+        assert 'function' is typeof N.replicate_up
       it 'should provide `push`', ->
-        assert 'function' is typeof cfg.push
+        assert 'function' is typeof N.push
       it 'should provide `master_push`', ->
-        assert 'function' is typeof cfg.master_push
-
-      it 'should be idempotent', ->
-        nimble cfg
-
-TODO: actually test anything
+        assert 'function' is typeof N.master_push
 
     assert = require 'assert'

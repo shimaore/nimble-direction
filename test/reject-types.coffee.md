@@ -15,7 +15,7 @@
         fun = eval rfd.validate_doc_update
         fun {type:'number',_id:'number:123'}
 
-      it 'should return a function that validates a document', (done) ->
+      it 'should return a function that rejects a document', (done) ->
         fun = eval rfd.validate_doc_update
         try
           fun {type:'blob',_id:'blob:123'}

@@ -1,20 +1,6 @@
 nimble-direction
 ================
 
-This module extends the `cfg` object with CCNQ4-related tools.
-
-Usage
------
-
-```coffeescript
-Nimble = require 'nimble-direction'
-
-cfg = require 'config.json'
-Nimble cfg
-.then ->
-  run cfg
-```
-
     sleep = (timeout) -> new Promise (resolve) -> setTimeout resolve, timeout
 
     module.exports = (cfg) ->
@@ -22,34 +8,38 @@ Nimble cfg
 Configuration variables
 -----------------------
 
-      debug "Configuring #{pkg.name} version #{pkg.version}."
-
 ### `prefix_admin` / `NIMBLE_PREFIX_ADMIN`  (required)
 
-`.prefix_admin` (string) is a CouchDB prefix (a base URI with no database name in the path) with admin access to the _local_ CouchDB instance.
-If it is not present in the configuration, the value of the `NIMBLE_PREFIX_ADMIN` environment variable is used.
+`cfg.prefix_admin` (string,required) is a CouchDB prefix (a base URI with no database name in the path) with admin access to the _local_ CouchDB instance. Default: the value of the `NIMBLE_PREFIX_ADMIN` environment variable.
 
-      cfg.prefix_admin ?= process.env.NIMBLE_PREFIX_ADMIN
+      {prefix_admin} = cfg
+      prefix_admin ?= process.env.NIMBLE_PREFIX_ADMIN
 
 One of the environment variable or the `.prefix_admin` configuration item is required.
 
-      assert cfg.prefix_admin?, 'Missing prefix_admin'
+      assert prefix_admin?, 'Missing prefix_admin'
 
 ### `prefix_source` / `NIMBLE_PREFIX_SOURCE`  (optional)
 
-`.prefix_source` (string) is a CouchDB prefix (a base URI with no database name in the path) for the _central_ (master) database (so that we can start replications from it).
-If it is not present in the configuration, the value of the `NIMBLE_PREFIX_SOURCE` environment variable is used.
+`cfg.prefix_source` (string) is a CouchDB prefix (a base URI with no database name in the path) for the _central_ (master) database (so that we can start replications from it). Default value: the value of the `NIMBLE_PREFIX_SOURCE` environment variable.
 
-      cfg.prefix_source ?= process.env.NIMBLE_PREFIX_SOURCE
+      {prefix_source} = cfg
+      prefix_source ?= process.env.NIMBLE_PREFIX_SOURCE
 
 If neither is present, replication will not work.
 
+### `prefix_upload` / `NIMBLE_PREFIX_UPLOAD`  (optional)
+
+      {prefix_upload} = cfg
+      prefix_upload ?= process.env.NIMBLE_PREFIX_UPLOAD
+
 ### `prov_master_admin` / `NIMBLE_PROV_MASTER_ADMIN`  (optional)
 
-`.prov_master_admin` (string or array) are URIs to the master provisioning database(s) with admin access.
+`cfg.prov_master_admin` (string or array) are URIs to the master provisioning database(s) with admin access.
 If it is not present in the configuration, the value of the `NIMBLE_PROV_MASTER_ADMIN` environment variable is used.
 
-      cfg.prov_master_admin ?= process.env.NIMBLE_PROV_MASTER_ADMIN
+      {prov_master_admin} = cfg
+      prov_master_admin ?= process.env.NIMBLE_PROV_MASTER_ADMIN
 
 If neither is present, the `master_push` function will not work.
 
@@ -60,14 +50,14 @@ If neither is present, the `master_push` function will not work.
 Typically used to push a design document so that we can filter for replication.
 
       prov_masters = []
-      masters = cfg.prov_master_admin
+      masters = prov_master_admin
       if masters?
         if typeof masters is 'string'
           masters = [masters]
         prov_masters = masters.map (name) ->
           new CouchDB name
 
-      cfg.master_push = (doc) ->
+      master_push = (doc) ->
         debug "Updating master design document #{doc._id}"
         Promise.all prov_masters.map (master) ->
           update master, doc
@@ -78,9 +68,9 @@ Typically used to push a design document so that we can filter for replication.
 Push a document on the local provisioning database.
 Typically used to push a design document so that we can query.
 
-      cfg.push = (doc) ->
+      push = (doc) ->
         debug "Pushing #{doc._id}"
-        update (new CouchDB cfg.provisioning), doc
+        update (new CouchDB provisioning), doc
 
 `replicate`
 -----------
@@ -93,13 +83,13 @@ The one thing we know doesn't work is using the same document ID for documents t
 
 cfg.prefix_source (string, URI) — prefix used to build URI of source CouchDB databases when replicating downstream (e.g. from a master provisioning server)
 
-      cfg.replicate = replicate = (name,extensions,again = 2, delay = 503) ->
-        unless cfg.prefix_source?
-          debug "Warning: `replicate` called in standalone NIMBLE_MODE (ignored)"
+      replicate = (name,extensions,again = 2, delay = 503) ->
+        unless prefix_source?
+          debug "Warning: `replicate` is missing `prefix_source (ignored)"
           return
 
         try
-          await Replicator cfg.prefix_source, cfg.prefix_admin, name, extensions
+          await Replicator prefix_source, prefix_admin, name, extensions
           return true
 
         catch error
@@ -114,26 +104,24 @@ cfg.prefix_source (string, URI) — prefix used to build URI of source CouchDB d
 
 cfg.prefix_upload (string, URI) — prefix used to build URI of target CouchDB databases when replicating upstream (e.g. towards a CDR aggregation server)
 
-      cfg.replicate_up = replicate_up = (name,group_name) ->
-        unless cfg.prefix_upload?
-          debug "Warning: `replicate_up` is missing `cfg.prefix_upload` (ignored)"
+      replicate_up = (name,group_name) ->
+        unless prefix_upload?
+          debug "Warning: `replicate_up` is missing `prefix_upload` (ignored)"
           return
 
         try
-          await Replicator cfg.prefix_admin, cfg.prefix_upload, name, null, group_name
+          await Replicator prefix_admin, prefix_upload, name, null, group_name
           return true
 
         catch error
           debug "replicate_up #{name}: #{error.stack ? JSON.stringify error}"
           return false
 
-`prov`
-------
+cfg.provisioning (string,URI) — URL to the local provisioning URI. Default: the value of the `NIMBLE_PROVISIONING` environment variable, otherwise a database called `provisioning` in the `cfg.prefix_admin` server.
 
-A PouchDB instance to the local provisioning database.
-
-      cfg.provisioning ?= process.env.NIMBLE_PROVISIONING
-      cfg.provisioning ?= "#{cfg.prefix_admin}/provisioning"
+      {provisioning} = cfg
+      provisioning ?= process.env.NIMBLE_PROVISIONING
+      provisioning ?= "#{prefix_admin}/provisioning"
 
       inject = (source) -> (db) ->
         {_id} = source
@@ -145,10 +133,19 @@ A PouchDB instance to the local provisioning database.
         await db.put doc
         return
 
-      cfg.reject_tombstones = inject reject_tombstones
-      cfg.reject_types = inject reject_types
-
-      Promise.resolve cfg
+      {
+      reject_tombstones: inject reject_tombstones
+      reject_types: inject reject_types
+      prefix_admin
+      prefix_source
+      prefix_upload
+      prov_master_admin
+      master_push
+      push
+      replicate
+      replicate_up
+      provisioning
+      }
 
 Toolbox
 =======
@@ -159,9 +156,6 @@ Toolbox
     reject_types = require './reject-types'
 
     Replicator = require 'frantic-team'
-    crypto = require 'crypto'
     assert = require 'assert'
-    url = require 'url'
-    pkg = require './package.json'
-    debug = (require 'tangible') "#{pkg.name}:config"
+    debug = (require 'tangible') 'nimble-direction'
     update = require './update'
