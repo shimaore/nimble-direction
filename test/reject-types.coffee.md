@@ -23,4 +23,6 @@
           return done() if error.forbidden
         done new Error 'Missed'
 
+      return
+
     assert = require 'assert'

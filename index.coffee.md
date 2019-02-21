@@ -60,7 +60,7 @@ Typically used to push a design document so that we can filter for replication.
       master_push = (doc) ->
         debug "Updating master design document #{doc._id}"
         Promise.all prov_masters.map (master) ->
-          update master, doc
+          master.update doc
 
 `push`
 ------
@@ -70,7 +70,7 @@ Typically used to push a design document so that we can query.
 
       push = (doc) ->
         debug "Pushing #{doc._id}"
-        update (new CouchDB provisioning), doc
+        (new CouchDB provisioning).update doc
 
 `replicate`
 -----------
@@ -150,7 +150,7 @@ cfg.provisioning (string,URI) — URL to the local provisioning URI. Default: th
 Toolbox
 =======
 
-    CouchDB = require 'most-couchdb'
+    CouchDB = require 'most-couchdb/with-update'
 
     reject_tombstones = require 'reject-tombstones'
     reject_types = require './reject-types'
@@ -158,4 +158,3 @@ Toolbox
     Replicator = require 'frantic-team'
     assert = require 'assert'
     debug = (require 'tangible') 'nimble-direction'
-    update = require './update'

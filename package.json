@@ -14,7 +14,7 @@
   "license": "Unlicense",
   "devDependencies": {
     "coffeescript": "^2.3.0",
-    "mocha": "^5.1.1"
+    "mocha": "^6.0.0"
   },
   "dependencies": {
     "frantic-team": "^1.5.0",

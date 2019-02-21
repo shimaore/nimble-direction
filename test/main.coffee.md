@@ -17,4 +17,6 @@
       it 'should provide `master_push`', ->
         assert 'function' is typeof N.master_push
 
+      return
+
     assert = require 'assert'
