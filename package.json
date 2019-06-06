@@ -17,8 +17,8 @@
     "mocha": "^6.0.0"
   },
   "dependencies": {
-    "frantic-team": "^1.5.0",
-    "most-couchdb": "^1.5.0",
+    "frantic-team": "^1.6.1",
+    "most-couchdb": "^3.3.1",
     "reject-tombstones": "^1.0.0",
     "tangible": "^3.0.0"
   }
