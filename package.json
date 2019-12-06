@@ -7,19 +7,20 @@
     "build": "npm install --only=dev && rm package-lock.json && coffee -c *.coffee.md",
     "prepublishOnly": "npm run build",
     "pretest": "npm run build && coffee -c test/*.coffee.md",
-    "test": "mocha",
+    "test": "nyc mocha",
     "clean": "rm -rf *.js *.js.map test/*.js npm-debug.log"
   },
   "author": "Stéphane Alnet <stephane@shimaore.net> (http://stephane.shimaore.net/)",
   "license": "Unlicense",
   "devDependencies": {
-    "coffeescript": "^2.3.0",
-    "mocha": "^6.0.0"
+    "coffeescript": "^2.4.1",
+    "mocha": "^6.2.2",
+    "nyc": "^14.1.1"
   },
   "dependencies": {
-    "frantic-team": "^1.6.1",
-    "most-couchdb": "^3.3.1",
+    "frantic-team": "^1.6.2",
+    "most-couchdb": "^3.8.0",
     "reject-tombstones": "^1.0.0",
-    "tangible": "^3.0.0"
+    "tangible": "^3.1.0"
   }
 }
