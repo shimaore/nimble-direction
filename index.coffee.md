@@ -15,10 +15,6 @@ Configuration variables
       {prefix_admin} = cfg
       prefix_admin ?= process.env.NIMBLE_PREFIX_ADMIN
 
-One of the environment variable or the `.prefix_admin` configuration item is required.
-
-      assert prefix_admin?, 'Missing prefix_admin'
-
 ### `prefix_source` / `NIMBLE_PREFIX_SOURCE`  (optional)
 
 `cfg.prefix_source` (string) is a CouchDB prefix (a base URI with no database name in the path) for the _central_ (master) database (so that we can start replications from it). Default value: the value of the `NIMBLE_PREFIX_SOURCE` environment variable.
@@ -85,7 +81,10 @@ cfg.prefix_source (string, URI) — prefix used to build URI of source CouchDB d
 
       replicate = (name,extensions,again = 2, delay = 503) ->
         unless prefix_source?
-          debug "Warning: `replicate` is missing `prefix_source (ignored)"
+          debug.dev "Warning: `replicate` is missing `prefix_source` (ignored)"
+          return
+        unless prefix_admin?
+          debug.dev "Warning: `replicate` is missing `prefix_admin` (ignored)"
           return
 
         try
@@ -121,7 +120,7 @@ cfg.provisioning (string,URI) — URL to the local provisioning URI. Default: th
 
       {provisioning} = cfg
       provisioning ?= process.env.NIMBLE_PROVISIONING
-      provisioning ?= "#{prefix_admin}/provisioning"
+      provisioning ?= "#{prefix_admin}/provisioning" if prefix_admin?
 
       inject = (source) -> (db) ->
         {_id} = source
@@ -156,5 +155,4 @@ Toolbox
     reject_types = require './reject-types'
 
     Replicator = require 'frantic-team'
-    assert = require 'assert'
     debug = (require 'tangible') 'nimble-direction'
